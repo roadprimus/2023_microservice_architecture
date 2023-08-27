@@ -1,0 +1,1 @@
+docker run --name pg_database --env-file .env -p 5432:5432 -d postgres:15.4-alpine3.18
