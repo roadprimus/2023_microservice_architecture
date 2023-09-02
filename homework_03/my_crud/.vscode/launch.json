@@ -1,0 +1,71 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "internalConsole"
+        },
+        {
+            "name": "runserver",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/my_crud/manage.py",
+            "args": [
+                "runserver"
+            ],
+            "console": "internalConsole",
+            "django": true
+        },
+        {
+            "name": "makemigrations",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/my_crud/manage.py",
+            "args": [
+                "makemigrations"
+            ],
+            "console": "internalConsole",
+            "django": true
+        },
+        {
+            "name": "migrate",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/my_crud/manage.py",
+            "args": [
+                "migrate"
+            ],
+            "console": "internalConsole",
+            "django": true
+        },
+        {
+            "name": "test",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/my_crud/manage.py",
+            "args": [
+                "test"
+            ],
+            "console": "internalConsole",
+            "django": true
+        },
+        {
+            "name": "pytest",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "-v",
+                "-s",
+                "my_crud/tests/tests.py"
+            ],
+            "console": "internalConsole"
+        },
+    ],
+}
