@@ -1,0 +1,1 @@
+newman run crud.postman_collection.json -e crud.postman_environment.json

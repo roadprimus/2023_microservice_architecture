@@ -28,9 +28,30 @@
 **postgres/** - Описание настроек БД postgresql</br>
 |-- **.env** - Переменные окружения для запуска БД</br>
 |-- **run.sh** - Команда запуска docker-контейнера с БД</br>
+**tests/** - Описание тестов</br>
+|-- **crud.postman_collection.json** - Коллекция postman тестов</br>
+|-- **crud.postman_environment.json** - Переменные окружения для запуска коллекции postman тестов</br>
+|-- **run.sh** - Команда запуска newman</br>
 
 ## Как сделан CRUD-сервис?
 
+## Тестирование CRUD-сервиса
+Для тестирования используется [postman](https://www.postman.com) и [newman](https://www.npmjs.com/package/newman). В postman можно создавать коллекции запросов и тесты к ним. newman позволяет запускать коллекции в командной строке.
+### Перед запуском тестов
+Подразумевается, что сервис доступен на хосте arch.homework, при этом сам сервис поднимается локально. Для настройки этого функционала смотри [README.md](https://github.com/roadprimus/2023_microservice_architecture/blob/main/homework_02/README.md) для Домашнего задания №2.
+### Установка postman на Mac
+Инструкция [тут](https://www.postman.com/downloads/).
+### Установка newman на Mac
+Можно через менеджер пакетов [brew](https://formulae.brew.sh/formula/newman).
+### Запуск тестов
+```
+% newman --version
+5.3.2
+% cd tests
+% ls
+crud.postman_collection.json	crud.postman_environment.json
+% newman run crud.postman_collection.json -e crud.postman_environment.json
+```
 
 ## Запуск сервиса через docker-compose.yml
 Этот функционал не нужно было реализовывать по ДЗ. Но так как k8s для новая система, то решил сначала сделать что-то похожее в более знакомой среде (Docker Compose). Как оказалось, это было очень полезно, так как столкнулся множеством мелких трудностей. В знакомой среде их проще решить. Не настраивал volume-ы, так как не нужно долго хранить данные в БД.
