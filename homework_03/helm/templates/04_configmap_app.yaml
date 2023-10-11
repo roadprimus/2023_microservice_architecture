@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  ALLOWED_HOSTS: "*"
+  DB_DEFAULT_ENGINE: django.db.backends.postgresql_psycopg2
+  DEBUG: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+kind: ConfigMap
+metadata:
+  name: {{ .Values.app.configmap.name }}
+  namespace: {{ .Values.namespace.name }}
