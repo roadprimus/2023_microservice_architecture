@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm.fullname" . }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "helm.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+        command: ["python"]
+        args: ["/var/www/my_crud/manage.py", "runserver", "0.0.0.0:8000"]
+        ports:
+          - containerPort: {{ .Values.app.service.port}}
+        env:
+          - name: ALLOWED_HOSTS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.app.configmap.name }}
+                key: ALLOWED_HOSTS
+          - name: DB_DEFAULT_ENGINE
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.app.configmap.name }}
+                key: DB_DEFAULT_ENGINE
+          - name: DB_DEFAULT_HOST
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_HOST
+          - name: DB_DEFAULT_NAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_DB
+          - name: DB_DEFAULT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_PASSWORD
+          - name: DB_DEFAULT_PORT
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_PORT
+          - name: DB_DEFAULT_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_USER
+          - name: DEBUG
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.app.configmap.name }}
+                key: DEBUG
+          - name: PYTHONDONTWRITEBYTECODE
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.app.configmap.name }}
+                key: PYTHONDONTWRITEBYTECODE
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.app.secret.name }}
+                key: SECRET_KEY
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.app.service.targetPort }}
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.app.service.targetPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 5

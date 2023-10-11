@@ -1,0 +1,66 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "helm.fullname" . }}-job
+  namespace: {{ .Values.namespace.name }}
+spec:
+  template:
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+        command: ["python"]
+        args: ["/var/www/my_crud/manage.py", "migrate"]
+        env:
+          - name: ALLOWED_HOSTS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.app.configmap.name }}
+                key: ALLOWED_HOSTS
+          - name: DB_DEFAULT_ENGINE
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.app.configmap.name }}
+                key: DB_DEFAULT_ENGINE
+          - name: DB_DEFAULT_HOST
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_HOST
+          - name: DB_DEFAULT_NAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_DB
+          - name: DB_DEFAULT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_PASSWORD
+          - name: DB_DEFAULT_PORT
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_PORT
+          - name: DB_DEFAULT_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_USER
+          - name: DEBUG
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.app.configmap.name }}
+                key: DEBUG
+          - name: PYTHONDONTWRITEBYTECODE
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.app.configmap.name }}
+                key: PYTHONDONTWRITEBYTECODE
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.app.secret.name }}
+                key: SECRET_KEY
+      restartPolicy: Never
+  backoffLimit: 4

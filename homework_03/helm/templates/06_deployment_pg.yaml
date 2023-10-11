@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.pg.service.app }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    app: {{ .Values.pg.service.app }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.pg.service.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.pg.service.app }}
+    spec:
+      containers:
+      - name: {{ .Values.pg.service.app }}
+        image: "{{ .Values.pg.image.repository }}:{{ .Values.pg.image.tag }}"
+        ports:
+          - containerPort: {{ .Values.pg.service.port }}
+        env:
+          - name: POSTGRES_DB
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_DB
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_USER
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.pg.secret.name }}
+                key: POSTGRES_PASSWORD
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"

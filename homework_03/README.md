@@ -14,6 +14,10 @@
 
 ## Содержание репозитория
 **README.md** - Описание домашней работы №3</br>
+**run_homework_03.sh** - Скрипт запуска домашней работы №3</br>
+**helm/** - Директория с helm-файлами</br>
+|-- **templates/** - Шаблоны для манифестов</br>
+|-- **values.yaml** - Переменные для шаблонов манифестов</br>
 **my_crud/** - Директория с CRUD-сервисом</br>
 |-- **my_crud/** - Сервис</br>
 |     |-- **fixtures/** - Начальные данные для таблицы пользователей</br>
@@ -33,7 +37,38 @@
 |-- **crud.postman_environment.json** - Переменные окружения для запуска коллекции postman тестов</br>
 |-- **run.sh** - Команда запуска newman</br>
 
-## Как сделан CRUD-сервис?
+## Запуск CRUD-сервиса
+Для запуска сервиса требуются следующие компоненты: [kind](https://kind.sigs.k8s.io), [Helm](https://helm.sh), [postman](https://www.postman.com) и [newman](https://www.npmjs.com/package/newman). Запуск осуществялется с помощью [Helm](https://helm.sh).
+```
+...homework_03 % helm install helm --generate-name
+```
+Необходимо подождать, чтобы поднялись pod-ы, несколько минут будет достаточно.
+```
+# Состояние pod-ов сразу после начала
+% kubectl get pods -n my-ns
+NAME                              READY   STATUS              RESTARTS   AGE
+db-74d95b5b79-zrzbt               0/1     ContainerCreating   0          6s
+helm-1697057553-bb656b49d-l7kvq   0/1     ContainerCreating   0          6s
+helm-1697057553-bb656b49d-nh9t2   0/1     ContainerCreating   0          6s
+helm-1697057553-job-wch84         0/1     ContainerCreating   0          6s
+
+# Состояние pod-ов через несколько минут
+% kubectl get pods -n my-ns
+NAME                              READY   STATUS      RESTARTS   AGE
+db-74d95b5b79-zrzbt               1/1     Running     0          2m21s
+helm-1697057553-bb656b49d-l7kvq   1/1     Running     0          2m21s
+helm-1697057553-bb656b49d-nh9t2   1/1     Running     0          2m21s
+helm-1697057553-job-rdmgb         0/1     Completed   0          90s
+helm-1697057553-job-wch84         0/1     Error       0          2m21s
+```
+Дальше можно переходить к тестированию. Для демонстрации домашней работы можно воспользоваться скриптом run_homework_03.sh. Этот скрипт делает следующие шаги:
+1. создаёт кластер;
+2. выполняет helm-чарты;
+3. запускает тесты;
+4. удаляет кластер.
+
+
+У этого скрипта есть недостаток. В нём используется команда sleep, чтобы дождаться завершения выполнения процесса, запущенного предыдущей командой. К сожалению, этого времени не всегда хватает для завершения процесса, запущенного предыдущей командой. Поэтому этот файл можно рассматривать, как последовательность команд, которые нужно выполнить.
 
 ## Тестирование CRUD-сервиса
 Для тестирования используется [postman](https://www.postman.com) и [newman](https://www.npmjs.com/package/newman). В postman можно создавать коллекции запросов и тесты к ним. newman позволяет запускать коллекции в командной строке.

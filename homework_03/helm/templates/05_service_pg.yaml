@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app:  {{ .Values.pg.service.app }}
+  name:  {{ .Values.pg.service.app }}
+  namespace: {{ .Values.namespace.name }}
+spec:
+  ports:
+  - name: "pg-port"
+    port: {{ .Values.pg.service.port }}
+    targetPort: {{ .Values.pg.service.targetPort }}
+  selector:
+    app:  {{ .Values.pg.service.app }}
